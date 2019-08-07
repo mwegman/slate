@@ -162,12 +162,16 @@ class Content extends React.Component {
     const window = getWindow(this.element)
     const native = window.getSelection()
     const { activeElement } = window.document
-    debug.update('updateSelection', { selection: selection.toJSON() })
 
     // COMPAT: In Firefox, there's a but where `getSelection` can return `null`.
     // https://bugzilla.mozilla.org/show_bug.cgi?id=827585 (2018/11/07)
-    if (!native) {
+    // or the IME is turned on and is composing
+    if (!native || editor.isComposing()) {
       return
+    }
+
+    if (debug.enabled) {
+      debug.update('updateSelection', { selection: selection.toJSON() })
     }
 
     const { rangeCount, anchorNode } = native
